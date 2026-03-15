@@ -1,0 +1,4 @@
+Scenario,Cross_ZoneC(>=4.5),Cross_ZoneD(>=7.1)
+Normal wear (slow),,
+Misalignment (medium),8.0,
+Bearing damage (fast),6.0,11.0
