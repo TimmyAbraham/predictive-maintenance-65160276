@@ -1,3 +1,8 @@
+
+ไฟล์ 65160276_preditive maintenanance.pdf คือไฟล์อธิบายครับ
+
+
+
 คำอธิบายไฟล์ในโปรเจค
 01_signal_processing.py
 
