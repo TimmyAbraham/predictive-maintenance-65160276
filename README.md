@@ -1,113 +1,92 @@
-Predictive Maintenance using Vibration Analysis (ISO 10816-3)
-
-โปรเจคนี้เป็นตัวอย่างการวิเคราะห์การสั่นสะเทือนของเครื่องจักรหมุน (Cooling Pump) เพื่อประเมินสภาพเครื่องจักรและพยากรณ์แนวโน้มการเสียหายในอนาคต โดยอ้างอิงมาตรฐาน ISO 10816-3 และใช้เทคนิค Machine Learning สำหรับการพยากรณ์ค่า vibration ในอนาคต
-
-การวิเคราะห์ในโปรเจคนี้แบ่งออกเป็น 4 ขั้นตอนหลัก ได้แก่
-
-Signal Processing
-
-ISO 10816-3 Assessment
-
-Predictive Simulation
-
-Machine Learning Forecast
-
-Dataset
-
-ข้อมูลที่ใช้เป็นข้อมูลการสั่นสะเทือนของเครื่อง Cooling Pump ซึ่งประกอบด้วย
-
-Time stamp
-
-Amplitude (Acceleration)
-
-ไฟล์ข้อมูลที่ใช้ในโปรเจคคือ
-
-A_Cooling Pump OAH 02_M1H_1480_Oct24.txt
-
-Project Files
-
+คำอธิบายไฟล์ในโปรเจค
 01_signal_processing.py
-ไฟล์นี้ใช้สำหรับประมวลผลสัญญาณการสั่นสะเทือน โดยทำการอ่านข้อมูล waveform จากไฟล์ .txt จากนั้นลบค่า DC offset ของ acceleration แปลงหน่วยจาก g เป็น m/s² ทำการ integrate เพื่อคำนวณ velocity และคำนวณค่า Velocity RMS (mm/s)
 
-ผลลัพธ์ที่ได้จากขั้นตอนนี้คือ
+ไฟล์นี้ใช้สำหรับ ประมวลผลสัญญาณการสั่นสะเทือน
 
-Velocity RMS = 2.699 mm/s
+ขั้นตอนที่ทำในไฟล์นี้
+
+อ่านข้อมูล waveform จากไฟล์ .txt
+
+ลบค่า DC offset ของ acceleration
+
+แปลงหน่วยจาก g → m/s²
+
+ทำการ integrate เพื่อคำนวณ velocity
+
+คำนวณค่า Velocity RMS (mm/s)
+
+ตัวอย่างผลลัพธ์
+
+Velocity RMS  = 2.699 mm/s
 Velocity Peak = 6.211 mm/s
 
-ไฟล์นี้จะสร้างไฟล์ผลลัพธ์ชื่อ
+ไฟล์นี้จะสร้างไฟล์ผลลัพธ์
 
 step1_velocity_timeseries.csv
 
 ซึ่งเป็นข้อมูล velocity ที่ใช้ในขั้นตอนถัดไป
 
 02_iso_assessment.py
-ไฟล์นี้ใช้สำหรับประเมินสภาพเครื่องจักรตามมาตรฐาน ISO 10816-3 โดยใช้ค่า Velocity RMS จาก Step 1
+
+ไฟล์นี้ใช้สำหรับ ประเมินสภาพเครื่องจักรตามมาตรฐาน ISO 10816-3
 
 สมมติฐานของเครื่องจักร
 
-Machine type : Cooling Pump
-Rated power : 75 kW
-Foundation : Rigid
-ISO group : 15–300 kW
+รายการ	ค่า
+ประเภทเครื่องจักร	Cooling Pump
+กำลังเครื่อง	75 kW
+ฐานเครื่อง	Rigid
+ISO Group	15–300 kW
 
-ผลการประเมินพบว่าเครื่องจักรอยู่ใน
+ผลการวิเคราะห์
 
-Zone A (Good condition)
+Velocity RMS = 2.699 mm/s
+Machine Condition = Zone A (Good Condition)
+
+หมายความว่าเครื่องจักรยังสามารถทำงานได้ตามปกติ
 
 03_predictive_model.py
-ไฟล์นี้ใช้สำหรับจำลองแนวโน้มการเสื่อมสภาพของเครื่องจักร (Predictive Simulation)
+
+ไฟล์นี้ใช้สำหรับ จำลองแนวโน้มการเสื่อมสภาพของเครื่องจักร
 
 มีการจำลอง 3 สถานการณ์ ได้แก่
 
 Normal wear (การสึกหรอตามปกติ)
+
 Misalignment / Unbalance
+
 Bearing damage
 
 โปรแกรมจะสร้างกราฟแนวโน้มค่า RMS และเปรียบเทียบกับเกณฑ์ ISO 10816-3
 
-ไฟล์ผลลัพธ์ที่ได้จากขั้นตอนนี้คือ
+ไฟล์ผลลัพธ์ที่ได้
 
 step3_simulated_trend.csv
 step3_prediction_summary.csv
-
 04_ml_prediction.py
+
 ไฟล์นี้ใช้ Machine Learning (Polynomial Regression) เพื่อเรียนรู้แนวโน้มของค่า RMS และพยากรณ์ค่า vibration ในอนาคต
 
-ขั้นตอนที่ทำในไฟล์นี้
+ขั้นตอนหลัก
 
 โหลดข้อมูลจาก Step 3
-Train โมเดล Polynomial Regression (degree = 2)
-ทำการ forecast ค่า RMS ในอนาคต
-ตรวจสอบค่าที่เกิน threshold ของ ISO
 
-ผลลัพธ์ที่ได้คือกราฟ
+Train โมเดล Polynomial Regression
 
-Current RMS trend
-Machine Learning forecast
-ISO threshold levels
+พยากรณ์ค่า RMS ในอนาคต
 
-Output Files
+เปรียบเทียบค่าที่ได้กับเกณฑ์ ISO
 
-ไฟล์ผลลัพธ์ที่ได้จากโปรเจคนี้
+ผลลัพธ์จะเป็นกราฟที่แสดง
 
-step1_velocity_timeseries.csv
-ข้อมูล velocity ที่ได้จากการแปลง acceleration
+แนวโน้มค่า RMS ปัจจุบัน
 
-step3_simulated_trend.csv
-ข้อมูล trend ที่จำลองสำหรับ predictive analysis
+ผลการพยากรณ์จาก Machine Learning
 
-step3_prediction_summary.csv
-สรุปผลการคาดการณ์การเสื่อมสภาพของเครื่องจักร
+เส้นเกณฑ์ ISO 10816-3
 
-Conclusion
-
-โปรเจคนี้แสดงตัวอย่างการใช้ Vibration Analysis ร่วมกับมาตรฐาน ISO 10816-3 และ Machine Learning เพื่อทำ Predictive Maintenance สำหรับเครื่องจักรหมุน
-
-แนวทางนี้ช่วยให้สามารถ
-
-ตรวจจับความผิดปกติของเครื่องจักร
-วิเคราะห์แนวโน้มการเสื่อมสภาพ
-พยากรณ์การเสียหายในอนาคต
-วางแผนการบำรุงรักษาล่วงหน้า
-
-ซึ่งช่วยลดความเสี่ยงของการหยุดเครื่องจักรโดยไม่คาดคิดและเพิ่มความน่าเชื่อถือของระบบเครื่องจักร
+ไฟล์ผลลัพธ์ (Output)
+ไฟล์	คำอธิบาย
+step1_velocity_timeseries.csv	ข้อมูล velocity ที่ได้จากการแปลง acceleration
+step3_simulated_trend.csv	ข้อมูลแนวโน้มที่จำลอง
+step3_prediction_summary.csv	สรุปผลการคาดการณ์การเสื่อมสภาพ
